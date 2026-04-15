@@ -98,10 +98,15 @@ def find_embedding(word, words, E):
   ##################################################################
   # TODO: Implement the following steps:
   # i) Find the index/position of 'word' in 'words'.
+  index = 0
+  for i in range(len(words)):
+    if words[i] == word:
+      index = i
+      break
   # ii) The row of 'E' at this index will be the embedding 'emb'. 
   ##################################################################
-  
-  return emb
+  emb = E[index]
+  return emb, index
 
 
 ############################################################
@@ -116,15 +121,19 @@ def find_most_sim_word(word, words, E):
   Return:
       - most_sim_word: The word which is most similar to the input 'word'
   '''
-  ###############################################################################################################
+  ######################x#########################################################################################
   # TODO: Implement the following steps: 
   # i) Get the word embedding of 'word' using the 'find_embedding' function. 
+  emb, index = find_embedding(word, words, E)
   # ii) Compute the similarity (dot product) of this embedding with every embedding, i.e. with each row of 'E'. 
+  dp = emb @ E.T # might have to fix these dimensions
   # iii) Find the index of the row of 'E' which gives the largest similarity, exculding the row which is the
   # embedding of 'word' from the search (for this, you will need to find the index/position of 'word' in 'words'). 
+  dp[index] = float("-inf")
+  most_sim_index = np.argmax(dp) #argmax gives the index of the max elem
   # iv) Find the word corresponding to that index from 'words'.
+  most_sim_word = words[most_sim_index]
   ###############################################################################################################
-    
   return most_sim_word
 
 
@@ -342,11 +351,19 @@ print(f"total % of variance explained by first 100 eigenvalues: {np.sum(pca.expl
 # TODO:
 # i) Get the set of eigenvectors, i.e. the matrix V (size 10,000 x 100). This will be used in Parts 2, 3.
 # Note: Make sure the dimensions are correct (apply transpose, if required).
+V = pca.components_.T # shape should be 10000 x 100
+# print(V.shape)
 # ii) Get P = McV. Normalize the columns of P (to have unit l2-norm) to get E. This will be used in Parts 2, 4, 5.
+P = M @ V
+E = P / np.linalg.norm(P, axis=0)
 # iii) Normalize the rows of E to have unit l2-norm.
+E = E / np.linalg.norm(E, axis=1, keepdims=True)
 # iv) Complete the 'find_embedding' function and the 'find_most_sim_word' function. 
-# v) Pick some word(s), e.g. 'university', uqertyse the 'find_most_sim_word' function to find the most similar word.
-
+# print(f"most similar word to university: {find_most_sim_word("university", words, E)}")
+# print(f"most similar word to canadian: {find_most_sim_word("canadian", words, E)}")
+# print(f"most similar word to guitar: {find_most_sim_word("guitar", words, E)}")
+# print(f"most similar word to democratic: {find_most_sim_word("democratic", words, E)}")
+# print(f"most similar word to mountain: {find_most_sim_word("mountain", words, E)}")
 
 
 #########################################################################################
