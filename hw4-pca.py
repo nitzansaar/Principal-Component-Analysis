@@ -153,10 +153,8 @@ def find_info_ev(v, words, k=20):
   '''
   #########################################################################################################################
   # TODO: Implement the following steps:
-  # i) Obtain a set of indices (postions in 'v') which would sort the entries of 'v' in decreasing order of absolute value.
-  # ii) Using the set of first 'k' indices, get the corresponding words from the list 'words'.
-  ##########################################################################################################################
-
+  indices = np.argsort(np.abs(v))[::-1][:k]
+  info = [str(words[i]) for i in indices]
   return info
 
 
@@ -370,11 +368,14 @@ E = E / np.linalg.norm(E, axis=1, keepdims=True)
 # Part 3: Looking at the information captured by the principal components/eigenvectors #
 #########################################################################################
 # TODO:
-# i) Complete the 'find_info_ev' function, which finsd the words corresponding to k largest magnitude
+# i) Complete the 'find_info_ev' function, which finds the words corresponding to k largest magnitude
 # elements of a given eigenvector.
 # ii) Choose a set of eigenvectors (i.e. columns) from V.
+chosen_evs = V.T
 # iii) For each eigenvector, use the 'find_info_ev' function to see what kind of information it captures. Print the results.
-
+for ev in chosen_evs:
+  # print(np.shape(ev)[0])
+  print(f"{find_info_ev(ev, words, 10)}\n")
 
 
 ##############################################################################
