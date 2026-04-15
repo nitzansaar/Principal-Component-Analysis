@@ -373,9 +373,9 @@ E = E / np.linalg.norm(E, axis=1, keepdims=True)
 # ii) Choose a set of eigenvectors (i.e. columns) from V.
 chosen_evs = V.T
 # iii) For each eigenvector, use the 'find_info_ev' function to see what kind of information it captures. Print the results.
-for ev in chosen_evs:
-  # print(np.shape(ev)[0])
-  print(f"{find_info_ev(ev, words, 10)}\n")
+# for ev in chosen_evs:
+#   # print(np.shape(ev)[0])
+#   print(f"{find_info_ev(ev, words, 10)}\n")
 
 
 ##############################################################################
