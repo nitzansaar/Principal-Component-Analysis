@@ -255,10 +255,14 @@ def find_most_sim_word_w(w, words, E, ids):
   ########################################################################################################################################
   # TODO: Implement the following steps: 
   # i) Compute the similarity (dot product) of 'w' with every embedding, i.e. with each row of 'E'. 
+  dp = w @ E.T
   # ii) Find the index of the row of 'E' which gives the largest similarity, exculding the rows at indices given by 'ids' from the search. 
+  for i in ids:
+    dp[i] = float("-inf")
+  index = np.argmax(dp)
   # iii) Find the word corresponding to that index from 'words'.
   #########################################################################################################################################
-    
+  most_sim_word = words[index]
   return most_sim_word
 
   
@@ -275,10 +279,17 @@ def find_analog(wd1, wd2, wd3, words, E):
   ########################################################################################################################################
   # TODO: Implement the following steps: 
   # i) Find the word embeddings of wd1, wd2 and wd3 using the 'find_embedding' function: w1, w2, w3, respectively.
+  w1, i1 = find_embedding(wd1, words, E)
+  w2, i2 = find_embedding(wd2, words, E)
+  w3, i3 = find_embedding(wd3, words, E)
   # ii) Get vector w = w2 - w1 + w3, and normalize it. 
+  w = w2 - w1 + w3
+  w = w / np.linalg.norm(w)
   # iii) Find the indices/positions of wd1, wd2, wd3 from the list 'words'.
   # iv) Find wd4, the closest word to w (excluding the given three words from the search by using the indices from the previous step), 
   # using the 'find_most_sim_word_w' function. This will be the answer to the analogy question.
+  wd4 = find_most_sim_word_w(w, words, E, [i1, i2, i3])
+  
   #########################################################################################################################################
   
   return wd4
@@ -303,6 +314,8 @@ def check_analogy_task_acc(task_words, words, E):
     wd4_ans = find_analog(word_seq[0], word_seq[1], word_seq[2], words, E)
     if wd4_ans == word_seq[3]:
       acc+=1
+    else:
+      print(f"predicted answer: {word_seq[0], word_seq[1], word_seq[2], str(wd4_ans)} | correct answer: {word_seq[3]}")
   acc = acc/len(task_words)
       
   return acc
@@ -325,6 +338,7 @@ words = np.array(words)
 # for i in range(10):
 #   print(words[i])
 task_words = read_txt('analogy_task.txt')
+
 
 
 ###########################################################
@@ -407,9 +421,9 @@ w = w / np.linalg.norm(w)
 # proj_seq = get_projections(word_seq, words, E, w)
 # plot_projections(word_seq, proj_seq)
 # Part 4.2
-word_seq = np.array(['math', 'history', 'nurse', 'doctor', 'pilot', 'teacher', 'engineer', 'science', 'arts', 'literature', 'bob', 'alice'])
-proj_seq = get_projections(word_seq, words, E, w)
-plot_projections(word_seq, proj_seq)
+# word_seq = np.array(['math', 'history', 'nurse', 'doctor', 'pilot', 'teacher', 'engineer', 'science', 'arts', 'literature', 'bob', 'alice'])
+# proj_seq = get_projections(word_seq, words, E, w)
+# plot_projections(word_seq, proj_seq)
 
 ###########################################################
 # Part 5 (BONUS): Finding answers to analogy questions #
@@ -417,5 +431,8 @@ plot_projections(word_seq, proj_seq)
 # TODO:
 # i) Complete the 'find_analog' function.
 # ii) Test it using a set of words for an analogy question, such as the one given in the problem statement.
+# res = find_analog('man', 'woman', 'king', words, E)
+# print(res)
 # iii) Use the 'check_analogy_task_acc' function to evaluate 'find_analog' on the list of analogy queries in 'task_words'.
-
+acc = check_analogy_task_acc(task_words, words, E)
+print(f"Analogy task accuracy: {acc}")
