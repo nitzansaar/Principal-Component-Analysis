@@ -75,10 +75,11 @@ def plot_evs(D):
   n = np.shape(D)[0]
   x = range(1, n+1)
   fig, ax = plt.subplots()
+  ax.set_yscale('log')
   ax.plot(x, D)
 
   ax.set(xlabel = 'Index', ylabel = 'Eigenvalue')
-  fig.savefig("hw4/ev_plot.png")
+  fig.savefig("ev_plot.png")
   plt.show()
 
 
@@ -307,6 +308,9 @@ def check_analogy_task_acc(task_words, words, E):
 M = read_csv("co_occur.csv")
 words = read_txt("dictionary.txt")
 words = np.array(words)
+# # quick test to see if it read the words correctly
+# for i in range(10):
+#   print(words[i])
 task_words = read_txt('analogy_task.txt')
 
 
@@ -314,12 +318,21 @@ task_words = read_txt('analogy_task.txt')
 # Part 1: Applying PCA to get the low rank approximation #
 ###########################################################
 # TODO:
-# i) Apply the log transformation mentioned in the problem statement.
+# i) Apply the log transformation mentioned in the problem statement. Mij~ = log(1 + Mij)
+M = np.log1p(M)
 # ii) Get centered M, denoted as Mc. First obtain the (d-dimensional) mean feature vector by averaging across all datapoints (rows).
 # Then subtract it from all the n feature vectors.
+mean_vec = np.mean(M, axis=0)
+M = M - mean_vec
 # iii) Use the PCA function (fit method) from the sklearn library to apply PCA on Mc and get its rank-100 approximation (Go through 
 # the documentation available at: https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html).
+# rank-100 approx means youre approximating the data using only the top 100 principal components rather than all of them
+pca = PCA(n_components=100)
+pca.fit(M)
 # iv) Get the set of eigenvalues and obtain the plot using the 'plot_evs' function provided above.
+eigenvalues = pca.explained_variance_
+print(f"total % of variance explained by first 100 eigenvalues: {np.sum(pca.explained_variance_ratio_)}")
+# plot_evs(eigenvalues)
 
 
 
