@@ -94,6 +94,7 @@ def find_embedding(word, words, E):
       - E: The embedding matrix (10,000 x 100)
   Return:
       - emb: The word embedding
+      - index: The index of the embedding
   '''  
   ##################################################################
   # TODO: Implement the following steps:
@@ -162,7 +163,7 @@ def find_info_ev(v, words, k=20):
 # Explore Semantic/Syntactic Concepts Captured by Word Embeddings (For Part 4) #
 #################################################################################
 
-def plot_projections(word_seq, proj_seq, filename = 'hw4/projections.png'):
+def plot_projections(word_seq, proj_seq, filename = 'projections.png'):
   '''
   Inputs: 
    - word_seq: A sequence of words (strings), used as labels.
@@ -172,6 +173,7 @@ def plot_projections(word_seq, proj_seq, filename = 'hw4/projections.png'):
   Plot the set of values in 'proj_seq' on a line with the corresponding labels from 'word_seq and
   save the figure
   '''
+  proj_seq = np.array(proj_seq)
   y = np.zeros(len(proj_seq))
   fig, ax = plt.subplots()
   ax.scatter(proj_seq, y)
@@ -221,12 +223,16 @@ def get_projections(word_seq, words, E, w):
   '''
   ###############################################################################################################
   # TODO: Implement the following steps: 
+  proj_seq = []
   # i) For each word in 'word_seq':
   #     - Get its word embedding using the 'find_embedding' function. 
   #     - Find the projection of this embedding onto 'w', i.e. the dot product with normalized 'w'. 
+  for i in range(len(word_seq)):
+    emb, _ = find_embedding(word_seq[i], words, E)
+    proj = emb @ w
+    proj_seq.append(proj)
   # ii) Return the set of projections. 
   ###############################################################################################################  
-  
   return proj_seq
     
 
@@ -383,7 +389,12 @@ chosen_evs = V.T
 ##############################################################################
 # TODO:
 # i) Use the 'find_embedding' function to find w1 and w2 (the embeddings for 'man' and 'woman', respectively). 
+test_words = ['man', 'woman']
+w1, _ = find_embedding(test_words[0], words, E)
+w2, _ = find_embedding(test_words[1], words, E)
 # ii) Get w = w1 - w2 and normalize it.
+w = w1 - w2
+w = w / np.linalg.norm(w)
 # iii) Complete the 'get_projections' function.
 # iv) Use this function to get the set of projections for the list of words mentioned in Part 4.1. 
 # Use the 'plot_projections' function to obtain the plot of projections with their corresponding word labels.
@@ -392,11 +403,13 @@ chosen_evs = V.T
 
 
 # Part 4.1
-word_seq = np.array(['boy', 'girl', 'brother', 'sister', 'king', 'queen', 'he', 'she','john', 'mary', 'wall', 'tree'])
-
+# word_seq = np.array(['boy', 'girl', 'brother', 'sister', 'king', 'queen', 'he', 'she','john', 'mary', 'wall', 'tree'])
+# proj_seq = get_projections(word_seq, words, E, w)
+# plot_projections(word_seq, proj_seq)
 # Part 4.2
 word_seq = np.array(['math', 'history', 'nurse', 'doctor', 'pilot', 'teacher', 'engineer', 'science', 'arts', 'literature', 'bob', 'alice'])
-
+proj_seq = get_projections(word_seq, words, E, w)
+plot_projections(word_seq, proj_seq)
 
 ###########################################################
 # Part 5 (BONUS): Finding answers to analogy questions #
